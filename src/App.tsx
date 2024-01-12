@@ -4,6 +4,7 @@ import Header from './components/Header'
 import { GlobalStyles } from './styles'
 
 import RoutesPages from './routes'
+import Footer from './components/Footer'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Header />
       </div>
       <RoutesPages />
+      <Footer />
     </BrowserRouter>
   )
 }

@@ -4,7 +4,8 @@ export const colors = {
   white: '#EEEEEE',
   green: '#10AC84',
   grey: '#333',
-  black: '#111'
+  black: '#111',
+  lightgrey: '#a3a3a3'
 }
 
 export const GlobalStyles = createGlobalStyle`
