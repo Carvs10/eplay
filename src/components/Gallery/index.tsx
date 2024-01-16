@@ -6,11 +6,7 @@ import zoom from '../../assets/images/mais-zoom.png'
 import { Action, Item, Items, Modal, ModalContent } from './styles'
 import close from '../../assets/images/close.png'
 import { useState } from 'react'
-
-interface GalleryItem {
-  type: 'image' | 'video'
-  url: string
-}
+import { GalleryItem } from '../../pages/Home'
 
 const mock: GalleryItem[] = [
   {
