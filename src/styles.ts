@@ -8,6 +8,11 @@ export const colors = {
   lightgrey: '#a3a3a3'
 }
 
+export const breakpoints = {
+  desktop: '1024px',
+  tablet: '768px'
+}
+
 export const GlobalStyles = createGlobalStyle`
   * {
     margin: 0;
@@ -27,6 +32,10 @@ export const GlobalStyles = createGlobalStyle`
     max-width: 1024px;
     width: 100%;
     margin: 0 auto;
+
+    @media (max-width: ${breakpoints.desktop} ){
+      max-width: 80%;
+    }
   }
 
 `
