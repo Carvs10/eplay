@@ -7,44 +7,60 @@ import {
   Quantity,
   Sidebar
 } from './styles'
-import starwars from '../../assets/images/star_wars.png'
 import Tag from '../Tag'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootReducer } from '../../store'
+import { close, remove } from '../../store/reducers/cart'
+import { formatPrice } from '../ProductsList'
 
-const Cart = () => (
-  <CartContainer>
-    <Overlay />
-    <Sidebar>
-      <ul>
-        <CartItem>
-          <img src={starwars} alt="" />
-          <div>
-            <h3>Nome do jogo</h3>
-            <Tag>Categoria</Tag>
-            <Tag>Plataforma</Tag>
-            <span>R$ 150,00</span>
-          </div>
-          <button type="button" />
-        </CartItem>
-        <CartItem>
-          <img src={starwars} alt="" />
-          <div>
-            <h3>Nome do jogo</h3>
-            <Tag>Categoria</Tag>
-            <Tag>Plataforma</Tag>
-            <span>R$ 150,00</span>
-          </div>
-          <button type="button" />
-        </CartItem>
-      </ul>
-      <Quantity>2 jogo(s) no carrinho</Quantity>
-      <Prices>
-        Total de R$ 250,00 <span>Em até 6x sem juros</span>
-      </Prices>
-      <Button title="Clique aqui para continuar" type="button">
-        Continuar com a compra
-      </Button>
-    </Sidebar>
-  </CartContainer>
-)
+const Cart = () => {
+  const { isOpen, items } = useSelector((state: RootReducer) => state.cart)
+  const dispatch = useDispatch()
+
+  const closeCart = () => {
+    dispatch(close())
+  }
+
+  const getTotalPrice = () => {
+    return items.reduce((acc, current) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return (acc += current.prices.current!)
+    }, 0)
+  }
+
+  const removeItem = (id: number) => {
+    dispatch(remove(id))
+  }
+
+  return (
+    <CartContainer className={isOpen ? 'is-open' : ''}>
+      <Overlay onClick={closeCart} />
+      <Sidebar>
+        <ul>
+          {items.map((item) => (
+            <CartItem key={item.id}>
+              <img src={item.media.thumbnail} alt="" />
+              <div>
+                <h3>{item.name}</h3>
+                <Tag>{item.details.category}</Tag>
+                <Tag>{item.details.system}</Tag>
+                <span>{formatPrice(item.prices.current)}</span>
+              </div>
+              <button type="button" onClick={() => removeItem(item.id)} />
+            </CartItem>
+          ))}
+        </ul>
+        <Quantity>{items.length} jogo(s) no carrinho</Quantity>
+        <Prices>
+          Total de {formatPrice(getTotalPrice())}{' '}
+          <span>Em até 6x sem juros</span>
+        </Prices>
+        <Button title="Clique aqui para continuar" type="button">
+          Continuar com a compra
+        </Button>
+      </Sidebar>
+    </CartContainer>
+  )
+}
 
 export default Cart
