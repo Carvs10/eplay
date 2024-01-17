@@ -8,6 +8,8 @@ import RoutesPages from './routes'
 import Footer from './components/Footer'
 import { store } from './store'
 
+import Cart from './components/Cart'
+
 function App() {
   return (
     <Provider store={store}>
@@ -18,6 +20,7 @@ function App() {
         </div>
         <RoutesPages />
         <Footer />
+        <Cart />
       </BrowserRouter>
     </Provider>
   )
