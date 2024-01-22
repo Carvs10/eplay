@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { HashLink } from 'react-router-hash-link'
 
 import {
   HeaderBar,
@@ -42,13 +43,22 @@ const Header = () => {
           <nav>
             <Links>
               <LinkItem>
-                <Link to="/categories">Categorias</Link>
+                <Link
+                  title="Clique aqui para ir para as Categorias"
+                  to="/categories"
+                >
+                  Categorias
+                </Link>
               </LinkItem>
               <LinkItem>
-                <a href="">Novidades</a>
+                <HashLink title="Clique aqui para Em breve" to="/#coming-soon">
+                  Em breve
+                </HashLink>
               </LinkItem>
               <LinkItem>
-                <a href="">Promoções</a>
+                <HashLink title="Clique aqui para Promoções" to="/#on-sale">
+                  Promoções
+                </HashLink>
               </LinkItem>
             </Links>
           </nav>
@@ -62,13 +72,31 @@ const Header = () => {
       <NavMobile className={isMenuOpen ? 'is-open' : ''}>
         <Links>
           <LinkItem>
-            <Link to="/categories">Categorias</Link>
+            <Link
+              title="Clique aqui para ir para as Categorias"
+              to="/categories"
+              onClick={() => setMenuOpen(false)}
+            >
+              Categorias
+            </Link>
           </LinkItem>
           <LinkItem>
-            <a href="">Novidades</a>
+            <HashLink
+              title="Clique aqui para Em breve"
+              to="/#coming-soon"
+              onClick={() => setMenuOpen(false)}
+            >
+              Em breve
+            </HashLink>
           </LinkItem>
           <LinkItem>
-            <a href="">Promoções</a>
+            <HashLink
+              title="Clique aqui para Promoções"
+              to="/#on-sale"
+              onClick={() => setMenuOpen(false)}
+            >
+              Promoções
+            </HashLink>
           </LinkItem>
         </Links>
       </NavMobile>
