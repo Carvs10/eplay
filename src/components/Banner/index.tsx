@@ -4,12 +4,13 @@ import Button from '../Button'
 import { formatPrice } from '../../utils'
 import { useGetFeaturedGameQuery } from '../../services/api'
 import { BannerTitle, Image, Prices } from './styles'
+import Loader from '../Loader'
 
 const Banner = () => {
   const { data: game } = useGetFeaturedGameQuery()
 
   if (!game) {
-    return <h3>Carregando...</h3>
+    return <Loader />
   }
 
   return (
