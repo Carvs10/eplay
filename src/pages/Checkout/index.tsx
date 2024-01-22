@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from '../../components/Button'
 import Card from '../../components/Card'
 import { InputGroup, Row, TabButton } from './styles'
@@ -8,11 +8,26 @@ import cartao from '../../assets/images/cartao.png'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { usePurchaseMutation } from '../../services/api'
+import { useSelector } from 'react-redux'
+import { RootReducer } from '../../store'
+import { Navigate } from 'react-router-dom'
+import { formatPrice, getTotalPrice } from '../../utils'
 
+type Instalment = {
+  quantity: number
+  amount: number
+  formattedAmount: string
+}
 const Checkout = () => {
   const [payWithCard, setPayWithCard] = useState(false)
 
   const [purchase, { data, isSuccess }] = usePurchaseMutation()
+
+  const { items } = useSelector((state: RootReducer) => state.cart)
+
+  const [installments, setInstallments] = useState<Instalment[]>([])
+
+  const totalPrice = getTotalPrice(items)
 
   const form = useFormik({
     initialValues: {
@@ -111,12 +126,36 @@ const Checkout = () => {
     }
   })
 
-  const getErrorMessage = (fieldName: string, message?: string) => {
+  const checkInputHasError = (fieldName: string) => {
     const wasTouched = fieldName in form.touched
     const isInvalid = fieldName in form.errors
+    const hasError = wasTouched && isInvalid
 
-    if (wasTouched && isInvalid) return message
-    return ''
+    return hasError
+  }
+
+  useEffect(() => {
+    const calculateInstallments = () => {
+      const installmentsArray: Instalment[] = []
+
+      for (let i = 1; i <= 6; i++) {
+        installmentsArray.push({
+          quantity: i,
+          amount: totalPrice / i,
+          formattedAmount: formatPrice(totalPrice / i)
+        })
+      }
+
+      return installmentsArray
+    }
+
+    if (totalPrice > 0) {
+      setInstallments(calculateInstallments())
+    }
+  }, [totalPrice])
+
+  if (items.length === 0) {
+    return <Navigate to="/" />
   }
 
   return (
@@ -170,10 +209,8 @@ const Checkout = () => {
                     value={form.values.fullName}
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
+                    className={checkInputHasError('fullName') ? 'error' : ''}
                   />
-                  <small>
-                    {getErrorMessage('fullName', form.errors.fullName)}
-                  </small>
                 </InputGroup>
                 <InputGroup>
                   <label htmlFor="email">E-mail</label>
@@ -184,8 +221,8 @@ const Checkout = () => {
                     value={form.values.email}
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
+                    className={checkInputHasError('email') ? 'error' : ''}
                   />
-                  <small>{getErrorMessage('email', form.errors.email)}</small>
                 </InputGroup>
                 <InputGroup>
                   <label htmlFor="cpf">CPF</label>
@@ -196,8 +233,8 @@ const Checkout = () => {
                     value={form.values.cpf}
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
+                    className={checkInputHasError('cpf') ? 'error' : ''}
                   />
-                  <small>{getErrorMessage('cpf', form.errors.cpf)}</small>
                 </InputGroup>
               </Row>
               <h3 className="marginTop">Dados de entrega - conteúdo digital</h3>
@@ -211,13 +248,10 @@ const Checkout = () => {
                     value={form.values.deliveryEmail}
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
+                    className={
+                      checkInputHasError('deliveryEmail') ? 'error' : ''
+                    }
                   />
-                  <small>
-                    {getErrorMessage(
-                      'deliveryEmail',
-                      form.errors.deliveryEmail
-                    )}
-                  </small>
                 </InputGroup>
                 <InputGroup>
                   <label htmlFor="confirmDeliveryEmail">
@@ -230,13 +264,10 @@ const Checkout = () => {
                     value={form.values.confirmDeliveryEmail}
                     onChange={form.handleChange}
                     onBlur={form.handleBlur}
+                    className={
+                      checkInputHasError('confirmDeliveryEmail') ? 'error' : ''
+                    }
                   />
-                  <small>
-                    {getErrorMessage(
-                      'confirmDeliveryEmail',
-                      form.errors.confirmDeliveryEmail
-                    )}
-                  </small>
                 </InputGroup>
               </Row>
             </>
@@ -246,6 +277,7 @@ const Checkout = () => {
               <TabButton
                 isActive={!payWithCard}
                 onClick={() => setPayWithCard(false)}
+                type="button"
               >
                 <img src={boleto} alt="boleto" />
                 Boleto bancário
@@ -253,6 +285,7 @@ const Checkout = () => {
               <TabButton
                 isActive={payWithCard}
                 onClick={() => setPayWithCard(true)}
+                type="button"
               >
                 <img src={cartao} alt="cartao de credito" />
                 Cartão de crédito
@@ -272,10 +305,10 @@ const Checkout = () => {
                           value={form.values.cardOwner}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('cardOwner') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage('cardOwner', form.errors.cardOwner)}
-                        </small>
                       </InputGroup>
                       <InputGroup>
                         <label htmlFor="cpfOwner">
@@ -288,10 +321,10 @@ const Checkout = () => {
                           value={form.values.cpfOwner}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('cpfOwner') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage('cpfOwner', form.errors.cpfOwner)}
-                        </small>
                       </InputGroup>
                     </Row>
                     <Row marginTop="24px">
@@ -304,13 +337,10 @@ const Checkout = () => {
                           value={form.values.cardDisplayName}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('cardDisplayName') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage(
-                            'cardDisplayName',
-                            form.errors.cardDisplayName
-                          )}
-                        </small>
                       </InputGroup>
                       <InputGroup>
                         <label htmlFor="cardNumber">Número do cartão</label>
@@ -321,13 +351,10 @@ const Checkout = () => {
                           value={form.values.cardNumber}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('cardNumber') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage(
-                            'cardNumber',
-                            form.errors.cardNumber
-                          )}
-                        </small>
                       </InputGroup>
                       <InputGroup maxWidth="123px">
                         <label htmlFor="expiresMonth">Mês de vencimento </label>
@@ -338,13 +365,10 @@ const Checkout = () => {
                           value={form.values.expiresMonth}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('expiresMonth') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage(
-                            'expiresMonth',
-                            form.errors.expiresMonth
-                          )}
-                        </small>
                       </InputGroup>
                       <InputGroup maxWidth="123px">
                         <label htmlFor="expiresYear">Ano de vencimento</label>
@@ -355,13 +379,10 @@ const Checkout = () => {
                           value={form.values.expiresYear}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('expiresYear') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage(
-                            'expiresYear',
-                            form.errors.expiresYear
-                          )}
-                        </small>
                       </InputGroup>
                       <InputGroup maxWidth="48px">
                         <label htmlFor="securityCode">CVV</label>
@@ -372,13 +393,10 @@ const Checkout = () => {
                           value={form.values.securityCode}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('securityCode') ? 'error' : ''
+                          }
                         />
-                        <small>
-                          {getErrorMessage(
-                            'securityCode',
-                            form.errors.securityCode
-                          )}
-                        </small>
                       </InputGroup>
                     </Row>
                     <Row marginTop="24px">
@@ -390,17 +408,17 @@ const Checkout = () => {
                           value={form.values.installments}
                           onChange={form.handleChange}
                           onBlur={form.handleBlur}
+                          className={
+                            checkInputHasError('installments') ? 'error' : ''
+                          }
                         >
-                          <option>1x de R$ 200,00</option>
-                          <option>2x de R$ 100,00</option>
-                          <option>3x de R$ 66,99</option>
+                          {installments.map((installment) => (
+                            <option key={installment.quantity}>
+                              {installment.quantity}x de{' '}
+                              {installment.formattedAmount}
+                            </option>
+                          ))}
                         </select>
-                        <small>
-                          {getErrorMessage(
-                            'installments',
-                            form.errors.installments
-                          )}
-                        </small>
                       </InputGroup>
                     </Row>
                   </>
