@@ -1,4 +1,5 @@
 import { Game } from '../../pages/Home'
+import { formatPrice } from '../../utils'
 import Product from '../Product'
 import { Container, List, Title } from './styles'
 
@@ -9,12 +10,6 @@ export type Props = {
   id?: string
 }
 
-export const formatPrice = (price = 0) => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  }).format(price)
-}
 const ProductsList = ({ title, background, games, id }: Props) => {
   const getGameTags = (game: Game) => {
     const tags = []

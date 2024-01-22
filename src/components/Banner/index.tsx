@@ -1,7 +1,7 @@
 import Tag from '../Tag'
 import Button from '../Button'
 
-import { formatPrice } from '../ProductsList'
+import { formatPrice } from '../../utils'
 import { useGetFeaturedGameQuery } from '../../services/api'
 import { BannerTitle, Image, Prices } from './styles'
 
