@@ -4,7 +4,6 @@ import zoom from '../../assets/images/mais-zoom.png'
 import { Action, Item, Items, Modal, ModalContent } from './styles'
 import close from '../../assets/images/close.png'
 import { useState } from 'react'
-import { GalleryItem } from '../../pages/Home'
 
 type Props = {
   defaultCover: string
